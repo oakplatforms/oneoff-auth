@@ -30,6 +30,6 @@ jobs:
     - name: Deploy to Stage
       run: serverless deploy --stage stage --verbose
       env:
-        ADMIN_USER_POOL_ID: ${{ secrets.ADMIN_USER_POOL_ID }}
-        CLIENT_APPS_USER_POOL_ID: ${{ secrets.CLIENT_APPS_USER_POOL_ID }}
+        ADMIN_USER_POOL_ID: ${{ secrets.ADMIN_USER_POOL_ID_STAGE }}
+        CLIENT_APPS_USER_POOL_ID: ${{ secrets.CLIENT_APPS_USER_POOL_ID_STAGE }}
         TEMP_JWT_SECRET: ${{ secrets.TEMP_JWT_SECRET_STAGE }} 
