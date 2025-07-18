@@ -4,7 +4,7 @@ oak-auth contains authentication and authorization Lambda functions for the TCGX
 
 ## Structure
 - `lambdas/` — Lambda handler source files
-- `serverless.*.yml` — Serverless deployment configs for dev, stage, prod (service name: tcgx-auth)
+- `serverless.yml` — Serverless deployment configs for dev, stage, prod (service name: tcgx-auth)
 - `.github/workflows/` — GitHub Actions for CI/CD
 
 ## Deployment
