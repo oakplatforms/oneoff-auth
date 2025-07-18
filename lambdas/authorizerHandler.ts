@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import jwksClient from 'jwks-rsa'
+import type { APIGatewayAuthorizerEvent } from 'aws-lambda'
 
 const COGNITO_REGION = 'us-east-1'
 const USER_POOLS = {
@@ -8,17 +9,17 @@ const USER_POOLS = {
 }
 const TEMP_JWT_SECRET = process.env.TEMP_JWT_SECRET
 
-function getJwksUrl(userPoolId) {
+function getJwksUrl(userPoolId: string) {
   return `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${userPoolId}/.well-known/jwks.json`
 }
 
-async function getPublicKey(kid, jwksUrl) {
+async function getPublicKey(kid: string, jwksUrl: string) {
   const client = jwksClient({ jwksUri: jwksUrl })
   const key = await client.getSigningKey(kid)
   return key.getPublicKey()
 }
 
-function deny(resource) {
+function deny(resource: string) {
   return {
     principalId: 'unauthorized',
     policyDocument: {
@@ -35,7 +36,12 @@ function deny(resource) {
   }
 }
 
-function generatePolicy(principalId, effect, resource, context = {}) {
+function generatePolicy(
+  principalId: string,
+  effect: string,
+  resource: string,
+  context: Record<string, unknown> = {}
+) {
   return {
     principalId,
     policyDocument: {
@@ -52,7 +58,7 @@ function generatePolicy(principalId, effect, resource, context = {}) {
   }
 }
 
-export async function handler(event) {
+export async function handler(event: APIGatewayAuthorizerEvent) {
   try {
     const isTokenEvent = event.type === 'TOKEN'
 
@@ -60,15 +66,17 @@ export async function handler(event) {
       ? event.authorizationToken?.split(' ')[1]
       : event.headers?.Authorization?.split(' ')[1] || event.headers?.authorization?.split(' ')[1]
 
-    const routeArn = event.methodArn || event.routeArn
-    const method = event.requestContext?.http?.method || event.httpMethod || 'GET'
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const routeArn = (event as any).methodArn || (event as any).routeArn
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const method = (event as any).requestContext?.http?.method || (event as any).httpMethod || 'GET'
 
     if (!token) {
       console.warn('Missing token')
       return deny(routeArn)
     }
 
-    const decodedHeader = jwt.decode(token, { complete: true })
+    const decodedHeader = jwt.decode(token, { complete: true }) as { header?: { alg?: string; kid?: string } } | null
     if (!decodedHeader?.header) {
       console.warn('Malformed token, no header')
       return deny(routeArn)
@@ -96,17 +104,18 @@ export async function handler(event) {
           return deny(routeArn)
         }
       } catch (err) {
-        console.error('Guest token verification failed:', err.message)
+        const error = err as Error
+        console.error('Guest token verification failed:', error.message)
         return deny(routeArn)
       }
     }
 
     //🔐 Cognito token
-    const decodedPayload = jwt.decode(token) as jwt.JwtPayload
+    const decodedPayload = jwt.decode(token) as jwt.JwtPayload | null
     const issuer = decodedPayload?.iss
     if (!issuer) throw new Error('Issuer not found in token')
 
-    let userPoolId
+    let userPoolId: string | undefined
     if (issuer === `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${USER_POOLS.admin}`) {
       userPoolId = USER_POOLS.admin
     } else if (issuer === `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${USER_POOLS.clientApps}`) {
@@ -115,17 +124,19 @@ export async function handler(event) {
       throw new Error('Unknown issuer')
     }
 
-    const jwksUrl = getJwksUrl(userPoolId)
-    const publicKey = await getPublicKey(decodedHeader.header.kid, jwksUrl)
-    const decodedUser = jwt.verify(token, publicKey, { algorithms: ['RS256'] })
+    const jwksUrl = getJwksUrl(userPoolId as string)
+    const publicKey = await getPublicKey(decodedHeader.header.kid as string, jwksUrl)
+    const decodedUser = jwt.verify(token, publicKey, { algorithms: ['RS256'] }) as jwt.JwtPayload
 
-    let role = decodedUser['custom:role'] || 'user'
+    let role = (decodedUser['custom:role'] as string) || 'user'
     if (userPoolId === USER_POOLS.admin) role = 'admin'
     if (userPoolId === USER_POOLS.clientApps) role = 'customer'
 
-    return generatePolicy(decodedUser.sub, 'Allow', routeArn, { role, userPool: userPoolId })
+    return generatePolicy(decodedUser.sub as string, 'Allow', routeArn, { role, userPool: userPoolId })
   } catch (error) {
-    console.error('Authorization Error:', error.message)
-    return deny(event.methodArn || event.routeArn || '*')
+    const err = error as Error
+    console.error('Authorization Error:', err.message)
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return deny((event as any).methodArn || (event as any).routeArn || '*')
   }
 }
