@@ -18,7 +18,7 @@ provider:
 
 functions:
   authorizer:
-    name: tcgx-api-authorizer-${sls:stage}
+    name: tcgx-authorizer-${sls:stage}
     handler: lambdas/authorizerHandler.handler
     environment:
       ADMIN_USER_POOL_ID: ${env:ADMIN_USER_POOL_ID}
