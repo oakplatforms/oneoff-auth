@@ -1,0 +1,52 @@
+service: tcgx-auth
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-esbuild
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  httpApi:
+    payload: '2.0'
+
+  environment:
+    NODE_ENV: ${sls:stage}
+    STAGE: ${sls:stage}
+
+functions:
+  authorizer:
+    name: tcgx-auth-authorizer-${sls:stage}
+    handler: lambdas/authorizerHandler.handler
+    environment:
+      ADMIN_USER_POOL_ID: ${env:ADMIN_USER_POOL_ID}
+      CLIENT_APPS_USER_POOL_ID: ${env:CLIENT_APPS_USER_POOL_ID}
+      TEMP_JWT_SECRET: ${env:TEMP_JWT_SECRET}
+
+  guestToken:
+    name: tcgx-auth-guest-token-${sls:stage}
+    handler: lambdas/guestTokenHandler.handler
+    environment:
+      TEMP_JWT_SECRET: ${env:TEMP_JWT_SECRET}
+    events:
+      - httpApi:
+          path: /user/guest-token
+          method: GET
+
+custom:
+  dotenv:
+    path: .env.${opt:stage, 'dev'}
+    logging: false
+
+  esbuild:
+    bundle: true
+    minify: true
+    sourcemap: false
+    target: node20
+    platform: node
+    concurrency: 10
+
+package:
+  individually: true 
