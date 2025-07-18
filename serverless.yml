@@ -17,13 +17,15 @@ provider:
     STAGE: ${sls:stage}
 
 functions:
-  authorizer:
-    name: tcgx-authorizer-${sls:stage}
-    handler: lambdas/authorizerHandler.handler
+  tcgx-admin-post-confirmation:
+    name: tcgx-admin-post-confirmation-${sls:stage}
+    handler: lambdas/adminPostConfirmationHandler.handler
     environment:
-      ADMIN_USER_POOL_ID: ${env:ADMIN_USER_POOL_ID}
-      CLIENT_APPS_USER_POOL_ID: ${env:CLIENT_APPS_USER_POOL_ID}
-      TEMP_JWT_SECRET: ${env:TEMP_JWT_SECRET}
+      USER_POOL_ID: ${env:USER_POOL_ID}
+      APP_CLIENT_ID: ${env:APP_CLIENT_ID}
+      DEFAULT_USERNAME: ${env:DEFAULT_USERNAME}
+      DEFAULT_PASSWORD: ${env:DEFAULT_PASSWORD}
+      API_BASE_URL: ${env:API_BASE_URL}
 
 custom:
   dotenv:
@@ -40,12 +42,3 @@ custom:
 
 package:
   individually: true 
-
-resources:
-  Resources:
-    AllowApiGatewayInvokeAuthorizer:
-      Type: AWS::Lambda::Permission
-      Properties:
-        FunctionName: !Sub arn:aws:lambda:us-east-1:${AWS::AccountId}:function:tcgx-authorizer-${sls:stage}
-        Action: lambda:InvokeFunction
-        Principal: apigateway.amazonaws.com 
