@@ -25,16 +25,6 @@ functions:
       CLIENT_APPS_USER_POOL_ID: ${env:CLIENT_APPS_USER_POOL_ID}
       TEMP_JWT_SECRET: ${env:TEMP_JWT_SECRET}
 
-  guestToken:
-    name: tcgx-auth-guest-token-${sls:stage}
-    handler: lambdas/guestTokenHandler.handler
-    environment:
-      TEMP_JWT_SECRET: ${env:TEMP_JWT_SECRET}
-    events:
-      - httpApi:
-          path: /user/guest-token
-          method: GET
-
 custom:
   dotenv:
     path: .env.${opt:stage, 'dev'}
