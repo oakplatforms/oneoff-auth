@@ -34,7 +34,7 @@ functions:
       APP_CLIENT_ID: ${env:APP_CLIENT_ID}
       DEFAULT_USERNAME: ${env:DEFAULT_USERNAME}
       DEFAULT_PASSWORD: ${env:DEFAULT_PASSWORD}
-      API_BASE_URL: ${env:API_BASE_URL}
+      HOST_NAME: ${env:HOST_NAME}
 
 custom:
   dotenv:
