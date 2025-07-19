@@ -16,6 +16,15 @@ provider:
     NODE_ENV: ${sls:stage}
     STAGE: ${sls:stage}
 
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminInitiateAuth
+          Resource: 
+            - arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/${env:USER_POOL_ID}
+
 functions:
   tcgx-admin-post-confirmation:
     name: tcgx-admin-post-confirmation-${sls:stage}
