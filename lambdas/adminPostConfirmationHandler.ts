@@ -24,7 +24,7 @@ const post = (path: string, payload: unknown, sessionToken: string) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': sessionToken
+        'Authorization': `Bearer ${sessionToken}`
       },
     }
     const req = https.request(options, (res: IncomingMessage) => {
