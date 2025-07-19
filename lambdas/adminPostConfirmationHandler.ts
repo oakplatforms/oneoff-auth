@@ -1,21 +1,19 @@
 import { CognitoIdentityProviderClient, AdminInitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
 import https from 'https'
-import type { IncomingMessage } from 'http'
-import type { PostConfirmationTriggerEvent } from 'aws-lambda'
 
 const cognitoClient = new CognitoIdentityProviderClient({ region: 'us-east-1' })
 
 const defaultOptions = {
-  host: process.env.API_BASE_URL as string,
+  host: process.env.API_BASE_URL,
   port: 443,
 }
 
-const userPoolId = process.env.USER_POOL_ID as string
-const clientId = process.env.APP_CLIENT_ID as string
-const username = process.env.DEFAULT_USERNAME as string
-const password = process.env.DEFAULT_PASSWORD as string
+const userPoolId = process.env.USER_POOL_ID
+const clientId = process.env.APP_CLIENT_ID
+const username = process.env.DEFAULT_USERNAME
+const password = process.env.DEFAULT_PASSWORD
 
-const post = (path: string, payload: unknown, sessionToken: string): Promise<unknown> =>
+const post = (path, payload, sessionToken) =>
   new Promise((resolve, reject) => {
     const options = {
       ...defaultOptions,
@@ -26,17 +24,17 @@ const post = (path: string, payload: unknown, sessionToken: string): Promise<unk
         'Authorization': sessionToken
       },
     }
-    const req = https.request(options, (res: IncomingMessage) => {
+    const req = https.request(options, (res) => {
       let buffer = ''
-      res.on('data', (chunk: Buffer) => (buffer += chunk.toString()))
+      res.on('data', (chunk) => (buffer += chunk))
       res.on('end', () => resolve(JSON.parse(buffer)))
     })
-    req.on('error', (e: Error) => reject(e.message))
+    req.on('error', (e) => reject(e.message))
     req.write(JSON.stringify(payload))
     req.end()
   })
 
-export const handler = async (event: PostConfirmationTriggerEvent): Promise<typeof event> => {
+exports.handler = async (event) => {
   try {
     console.log('PostConfirmation Trigger Event:', JSON.stringify(event, null, 2))
 
