@@ -15,7 +15,8 @@ const clientId = process.env.APP_CLIENT_ID as string
 const username = process.env.DEFAULT_USERNAME as string
 const password = process.env.DEFAULT_PASSWORD as string
 
-const post = (path: string, payload: unknown, sessionToken: string): Promise<unknown> =>
+const post = (path: string, payload: unknown, sessionToken: string) => {
+  console.log('sessionToken', sessionToken, process.env.HOST_NAME)
   new Promise((resolve, reject) => {
     const options = {
       ...defaultOptions,
@@ -35,6 +36,7 @@ const post = (path: string, payload: unknown, sessionToken: string): Promise<unk
     req.write(JSON.stringify(payload))
     req.end()
   })
+}
 
 export const handler = async (event: PostConfirmationTriggerEvent): Promise<typeof event> => {
   try {
@@ -58,17 +60,17 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
     )
 
     console.log('Auth Response:', JSON.stringify(authResponse, null, 2))
+    console.log('THESE VALUES', username, password, userPoolId, clientId)
 
     const sessionToken = authResponse.AuthenticationResult?.AccessToken
     if (!sessionToken) {
-      console.log('THESE VALUES', username, password, userPoolId, clientId)
       console.error('AuthenticationResult:', authResponse.AuthenticationResult)
       console.error('ChallengeName:', authResponse.ChallengeName)
       console.error('Session:', authResponse.Session)
       throw new Error('Failed to retrieve session token')
     }
 
-    await post('/api/v1/user', {
+    const hello = await post('/api/v1/user', {
       'authId': userSub,
       'isAdmin': true,
       'admin': {
@@ -76,6 +78,7 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
       }
     }, sessionToken)
 
+    console.log('POST RESPONSE', JSON.stringify(hello, null, 2))
     return event
   } catch (error) {
     console.error('PostConfirmation Error:', error)
