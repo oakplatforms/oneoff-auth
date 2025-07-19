@@ -46,4 +46,4 @@ jobs:
         APP_CLIENT_ID: ${{ secrets.APP_CLIENT_ID_STAGE }}
         DEFAULT_USERNAME: ${{ secrets.DEFAULT_USERNAME_STAGE }}
         DEFAULT_PASSWORD: ${{ secrets.DEFAULT_PASSWORD_STAGE }}
-        HOST_NAME: ${{ vars.HOST_NAME_STAGE }} 
+        API_BASE_URL: ${{ vars.API_BASE_URL_STAGE }} 
