@@ -61,6 +61,7 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
 
     const sessionToken = authResponse.AuthenticationResult?.AccessToken
     if (!sessionToken) {
+      console.log('THESE VALUES', username, password, userPoolId, clientId)
       console.error('AuthenticationResult:', authResponse.AuthenticationResult)
       console.error('ChallengeName:', authResponse.ChallengeName)
       console.error('Session:', authResponse.Session)
