@@ -1,42 +1,13 @@
 import { CognitoIdentityProviderClient, AdminInitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
-import https from 'https'
-import type { IncomingMessage } from 'http'
 import type { PostConfirmationTriggerEvent } from 'aws-lambda'
+import { fetchData } from '../src/services/api'
 
 const cognitoClient = new CognitoIdentityProviderClient({ region: 'us-east-1' })
-
-const defaultOptions = {
-  host: process.env.HOST_NAME as string,
-  port: 443,
-}
 
 const userPoolId = process.env.USER_POOL_ID as string
 const clientId = process.env.APP_CLIENT_ID as string
 const username = process.env.DEFAULT_USERNAME as string
 const password = process.env.DEFAULT_PASSWORD as string
-
-const post = (path: string, payload: unknown, sessionToken: string) => {
-  console.log('sessionToken', sessionToken, process.env.HOST_NAME)
-  new Promise((resolve, reject) => {
-    const options = {
-      ...defaultOptions,
-      path,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`
-      },
-    }
-    const req = https.request(options, (res: IncomingMessage) => {
-      let buffer = ''
-      res.on('data', (chunk: Buffer) => (buffer += chunk.toString()))
-      res.on('end', () => resolve(JSON.parse(buffer)))
-    })
-    req.on('error', (e: Error) => reject(e.message))
-    req.write(JSON.stringify(payload))
-    req.end()
-  })
-}
 
 export const handler = async (event: PostConfirmationTriggerEvent): Promise<typeof event> => {
   try {
@@ -59,26 +30,24 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
       })
     )
 
-    console.log('Auth Response:', JSON.stringify(authResponse, null, 2))
-    console.log('THESE VALUES', username, password, userPoolId, clientId)
-
     const sessionToken = authResponse.AuthenticationResult?.AccessToken
     if (!sessionToken) {
-      console.error('AuthenticationResult:', authResponse.AuthenticationResult)
-      console.error('ChallengeName:', authResponse.ChallengeName)
-      console.error('Session:', authResponse.Session)
       throw new Error('Failed to retrieve session token')
     }
 
-    const hello = await post('/api/v1/user', {
-      'authId': userSub,
-      'isAdmin': true,
-      'admin': {
-        'email': event?.request?.userAttributes?.email,
-      }
-    }, sessionToken)
+    await fetchData({
+      url: '/user',
+      method: 'POST',
+      payload: {
+        authId: userSub,
+        isAdmin: true,
+        admin: {
+          email: event?.request?.userAttributes?.email,
+        },
+      },
+      token: sessionToken,
+    })
 
-    console.log('POST RESPONSE', JSON.stringify(hello, null, 2))
     return event
   } catch (error) {
     console.error('PostConfirmation Error:', error)
