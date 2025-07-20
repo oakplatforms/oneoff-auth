@@ -35,6 +35,7 @@ functions:
       ADMIN_DEFAULT_USERNAME: ${env:ADMIN_DEFAULT_USERNAME}
       ADMIN_DEFAULT_PASSWORD: ${env:ADMIN_DEFAULT_PASSWORD}
       API_BASE_URL: ${env:API_BASE_URL}
+      
   tcgx-consumer-post-confirmation:
     name: tcgx-consumer-post-confirmation-${sls:stage}
     handler: lambdas/consumerPostConfirmationHandler.handler
@@ -51,6 +52,13 @@ resources:
       Type: AWS::Lambda::Permission
       Properties:
         FunctionName: !Sub arn:aws:lambda:us-east-1:${AWS::AccountId}:function:tcgx-admin-post-confirmation-${sls:stage}
+        Action: lambda:InvokeFunction
+        Principal: apigateway.amazonaws.com
+
+    AllowApiGatewayInvokeConsumerPostConfirmation:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName: !Sub arn:aws:lambda:us-east-1:${AWS::AccountId}:function:tcgx-consumer-post-confirmation-${sls:stage}
         Action: lambda:InvokeFunction
         Principal: apigateway.amazonaws.com
 
