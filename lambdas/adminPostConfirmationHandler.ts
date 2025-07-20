@@ -6,8 +6,8 @@ const cognitoClient = new CognitoIdentityProviderClient({ region: 'us-east-1' })
 
 const userPoolId = process.env.ADMIN_USER_POOL_ID as string
 const clientId = process.env.ADMIN_CLIENT_ID as string
-const username = process.env.DEFAULT_USERNAME as string
-const password = process.env.DEFAULT_PASSWORD as string
+const username = process.env.ADMIN_DEFAULT_USERNAME as string
+const password = process.env.ADMIN_DEFAULT_PASSWORD as string
 
 export const handler = async (event: PostConfirmationTriggerEvent): Promise<typeof event> => {
   try {
