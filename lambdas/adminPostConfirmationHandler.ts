@@ -29,12 +29,10 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
         },
       })
     )
-
     const sessionToken = authResponse.AuthenticationResult?.AccessToken
     if (!sessionToken) {
       throw new Error('Failed to retrieve session token')
     }
-
     await fetchData({
       url: '/user',
       method: 'POST',
