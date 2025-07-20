@@ -23,15 +23,15 @@ provider:
           Action:
             - cognito-idp:AdminInitiateAuth
           Resource: 
-            - arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/${env:USER_POOL_ID}
+            - arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/${env:ADMIN_USER_POOL_ID}
 
 functions:
   tcgx-admin-post-confirmation:
     name: tcgx-admin-post-confirmation-${sls:stage}
     handler: lambdas/adminPostConfirmationHandler.handler
     environment:
-      USER_POOL_ID: ${env:USER_POOL_ID}
-      APP_CLIENT_ID: ${env:APP_CLIENT_ID}
+      ADMIN_USER_POOL_ID: ${env:ADMIN_USER_POOL_ID}
+      ADMIN_CLIENT_ID: ${env:ADMIN_CLIENT_ID}
       DEFAULT_USERNAME: ${env:DEFAULT_USERNAME}
       DEFAULT_PASSWORD: ${env:DEFAULT_PASSWORD}
       API_BASE_URL: ${env:API_BASE_URL}

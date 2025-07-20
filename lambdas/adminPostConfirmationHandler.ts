@@ -4,8 +4,8 @@ import { fetchData } from '../src/services/api'
 
 const cognitoClient = new CognitoIdentityProviderClient({ region: 'us-east-1' })
 
-const userPoolId = process.env.USER_POOL_ID as string
-const clientId = process.env.APP_CLIENT_ID as string
+const userPoolId = process.env.ADMIN_USER_POOL_ID as string
+const clientId = process.env.ADMIN_CLIENT_ID as string
 const username = process.env.DEFAULT_USERNAME as string
 const password = process.env.DEFAULT_PASSWORD as string
 

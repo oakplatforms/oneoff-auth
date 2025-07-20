@@ -42,8 +42,8 @@ jobs:
     - name: Deploy to Production
       run: serverless deploy --stage prod --verbose
       env:
-        USER_POOL_ID: ${{ secrets.USER_POOL_ID_PROD }}
-        APP_CLIENT_ID: ${{ secrets.APP_CLIENT_ID_PROD }}
+        ADMIN_USER_POOL_ID: ${{ secrets.ADMIN_USER_POOL_ID_PROD }}
+        ADMIN_CLIENT_ID: ${{ secrets.ADMIN_CLIENT_ID_PROD }}
         DEFAULT_USERNAME: ${{ secrets.DEFAULT_USERNAME }}
         DEFAULT_PASSWORD: ${{ secrets.DEFAULT_PASSWORD }}
         API_BASE_URL: ${{ vars.API_BASE_URL_PROD }} 
