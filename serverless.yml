@@ -36,6 +36,16 @@ functions:
       ADMIN_DEFAULT_PASSWORD: ${env:ADMIN_DEFAULT_PASSWORD}
       API_BASE_URL: ${env:API_BASE_URL}
 
+  tcgx-consumer-post-confirmation:
+    name: tcgx-consumer-post-confirmation-${sls:stage}
+    handler: lambdas/consumerPostConfirmationHandler.handler
+    environment:
+      CONSUMER_USER_POOL_ID: ${env:CONSUMER_USER_POOL_ID}
+      CONSUMER_CLIENT_ID: ${env:CONSUMER_CLIENT_ID}
+      CONSUMER_DEFAULT_USERNAME: ${env:CONSUMER_DEFAULT_USERNAME}
+      CONSUMER_DEFAULT_PASSWORD: ${env:CONSUMER_DEFAULT_PASSWORD}
+      API_BASE_URL: ${env:API_BASE_URL}
+
 custom:
   dotenv:
     path: .env.${opt:stage, 'dev'}
@@ -51,3 +61,18 @@ custom:
 
 package:
   individually: true 
+
+resources:
+  Resources:
+    AllowApiGatewayInvokeAdminPostConfirmation:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName: !Sub arn:aws:lambda:us-east-1:${AWS::AccountId}:function:tcgx-admin-post-confirmation-${sls:stage}
+        Action: lambda:InvokeFunction
+        Principal: apigateway.amazonaws.com
+    AllowApiGatewayInvokeConsumerPostConfirmation:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName: !Sub arn:aws:lambda:us-east-1:${AWS::AccountId}:function:tcgx-consumer-post-confirmation-${sls:stage}
+        Action: lambda:InvokeFunction
+        Principal: apigateway.amazonaws.com 
