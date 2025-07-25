@@ -1,4 +1,4 @@
-import { CognitoIdentityProviderClient, AdminInitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
+import { CognitoIdentityProviderClient, AdminInitiateAuthCommand, AdminAddUserToGroupCommand } from '@aws-sdk/client-cognito-identity-provider'
 import type { PostConfirmationTriggerEvent } from 'aws-lambda'
 import { fetchData } from '../src/services/api'
 
@@ -17,6 +17,15 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
     if (!userSub) {
       throw new Error("User 'sub' not found in attributes")
     }
+
+    //Add user to admin group
+    await cognitoClient.send(
+      new AdminAddUserToGroupCommand({
+        GroupName: 'admin',
+        Username: event?.request?.userAttributes?.email || username,
+        UserPoolId: userPoolId,
+      })
+    )
 
     const authResponse = await cognitoClient.send(
       new AdminInitiateAuthCommand({
