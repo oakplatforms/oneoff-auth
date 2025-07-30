@@ -13,6 +13,11 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
   try {
     console.log('PostConfirmation Trigger Event:', JSON.stringify(event, null, 2))
 
+    if (event.triggerSource !== 'PostConfirmation_ConfirmSignUp') {
+      console.log(`Skipping post confirmation logic for trigger source: ${event.triggerSource}`)
+      return event
+    }
+
     const userSub = event?.request?.userAttributes?.sub
     if (!userSub) {
       throw new Error("User 'sub' not found in attributes")
