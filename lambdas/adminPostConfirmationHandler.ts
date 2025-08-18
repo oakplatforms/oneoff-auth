@@ -11,7 +11,7 @@ const password = process.env.ADMIN_DEFAULT_PASSWORD as string
 
 export const handler = async (event: PostConfirmationTriggerEvent): Promise<typeof event> => {
   try {
-    console.log('PostConfirmation Trigger Event:', JSON.stringify(event, null, 2))
+    console.log('Admin PostConfirmation Trigger Event:', JSON.stringify(event, null, 2))
 
     if (event.triggerSource !== 'PostConfirmation_ConfirmSignUp') {
       console.log(`Skipping post confirmation logic for trigger source: ${event.triggerSource}`)
