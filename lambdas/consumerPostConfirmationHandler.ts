@@ -19,16 +19,6 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
     }
 
     const userSub = event?.request?.userAttributes?.sub
-    if (!userSub) {
-      throw new Error("User 'sub' not found in attributes")
-    }
-
-    //Ensure userSub is a string and not empty
-    if (typeof userSub !== 'string' || userSub.trim() === '') {
-      throw new Error(`Invalid userSub: ${userSub} (type: ${typeof userSub})`)
-    }
-
-    console.log('User Sub:', userSub, 'Type:', typeof userSub)
 
     //Use admin user to authenticate and create user record
     const authResponse = await cognitoClient.send(
@@ -50,25 +40,17 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
       url: '/user',
       method: 'POST',
       payload: {
-        authId: String(userSub),
+        authId: userSub,
         account: {
-          email: event?.request?.userAttributes?.email,
-          type: 'REGISTERED',
-          profile: {},
-          carts: [{}]
+          create: {
+            email: event?.request?.userAttributes?.email,
+            type: 'REGISTERED',
+            profile: {},
+            carts: [{}]
+          }
         }
       },
       token: sessionToken,
-    })
-
-    console.log('Payload sent:', {
-      authId: String(userSub),
-      account: {
-        email: event?.request?.userAttributes?.email,
-        type: 'REGISTERED',
-        profile: {},
-        carts: [{}]
-      }
     })
 
     return event
