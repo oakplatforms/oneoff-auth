@@ -42,12 +42,10 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
       payload: {
         authId: userSub,
         account: {
-          create: {
-            email: event?.request?.userAttributes?.email,
-            type: 'REGISTERED',
-            profile: {},
-            carts: [{}]
-          }
+          email: event?.request?.userAttributes?.email,
+          type: 'REGISTERED',
+          profile: {},
+          carts: [{}]
         }
       },
       token: sessionToken,
