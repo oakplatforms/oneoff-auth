@@ -23,6 +23,13 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
       throw new Error("User 'sub' not found in attributes")
     }
 
+    //Ensure userSub is a string and not empty
+    if (typeof userSub !== 'string' || userSub.trim() === '') {
+      throw new Error(`Invalid userSub: ${userSub} (type: ${typeof userSub})`)
+    }
+
+    console.log('User Sub:', userSub, 'Type:', typeof userSub)
+
     //Add user to admin group
     await cognitoClient.send(
       new AdminAddUserToGroupCommand({
@@ -51,13 +58,21 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
       url: '/user',
       method: 'POST',
       payload: {
-        authId: userSub,
+        authId: String(userSub),
         isAdmin: true,
         admin: {
           email: event?.request?.userAttributes?.email,
         },
       },
       token: sessionToken,
+    })
+
+    console.log('Payload sent:', {
+      authId: String(userSub),
+      isAdmin: true,
+      admin: {
+        email: event?.request?.userAttributes?.email,
+      },
     })
 
     return event

@@ -23,6 +23,13 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
       throw new Error("User 'sub' not found in attributes")
     }
 
+    //Ensure userSub is a string and not empty
+    if (typeof userSub !== 'string' || userSub.trim() === '') {
+      throw new Error(`Invalid userSub: ${userSub} (type: ${typeof userSub})`)
+    }
+
+    console.log('User Sub:', userSub, 'Type:', typeof userSub)
+
     //Add user to registered group
     await cognitoClient.send(
       new AdminAddUserToGroupCommand({
@@ -51,7 +58,7 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
       url: '/user',
       method: 'POST',
       payload: {
-        authId: userSub,
+        authId: String(userSub),
         account: {
           email: event?.request?.userAttributes?.email,
           type: 'REGISTERED',
@@ -60,6 +67,16 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
         }
       },
       token: sessionToken,
+    })
+
+    console.log('Payload sent:', {
+      authId: String(userSub),
+      account: {
+        email: event?.request?.userAttributes?.email,
+        type: 'REGISTERED',
+        profile: {},
+        carts: [{}]
+      }
     })
 
     return event
