@@ -18,6 +18,26 @@ type ErrorResponse = {
 }
 
 export async function fetchData<T>({ url, method = 'GET', payload, token }: FetchProps): Promise<T> {
+  //Validate API_BASE_URL environment variable
+  if (!process.env.API_BASE_URL) {
+    throw new Error('API_BASE_URL environment variable is not set')
+  }
+
+  //Validate API_BASE_URL is a valid URL
+  try {
+    new URL(process.env.API_BASE_URL)
+  } catch {
+    throw new Error(`Invalid API_BASE_URL: ${process.env.API_BASE_URL}`)
+  }
+
+  //Ensure API_BASE_URL doesn't end with a slash to avoid double slashes
+  const baseUrl = process.env.API_BASE_URL.endsWith('/')
+    ? process.env.API_BASE_URL.slice(0, -1)
+    : process.env.API_BASE_URL
+
+  //Ensure url starts with a slash
+  const apiPath = url.startsWith('/') ? url : `/${url}`
+
   const headers: Record<string, string> = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -30,7 +50,17 @@ export async function fetchData<T>({ url, method = 'GET', payload, token }: Fetc
     body: payload ? JSON.stringify(payload) : undefined,
   }
 
-  const response = await fetch(`${process.env.API_BASE_URL}/api/v1${url}`, options)
+  const fullUrl = `${baseUrl}/api/v1${apiPath}`
+  console.log('Making request to:', fullUrl)
+
+  //Validate the final URL before making the request
+  try {
+    new URL(fullUrl)
+  } catch {
+    throw new Error(`Invalid URL constructed: ${fullUrl}`)
+  }
+
+  const response = await fetch(fullUrl, options)
 
   if (response.status === 429) {
     throw new RateLimitError('Rate limit exceeded. Stopping further requests.')
