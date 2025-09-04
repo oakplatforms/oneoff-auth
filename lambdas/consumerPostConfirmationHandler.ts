@@ -1,4 +1,4 @@
-import { CognitoIdentityProviderClient, AdminInitiateAuthCommand, AdminAddUserToGroupCommand } from '@aws-sdk/client-cognito-identity-provider'
+import { CognitoIdentityProviderClient, AdminInitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
 import type { PostConfirmationTriggerEvent } from 'aws-lambda'
 import { fetchData } from '../src/services/api'
 
@@ -30,15 +30,7 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
 
     console.log('User Sub:', userSub, 'Type:', typeof userSub)
 
-    //Add user to registered group
-    await cognitoClient.send(
-      new AdminAddUserToGroupCommand({
-        GroupName: 'registered',
-        Username: event?.request?.userAttributes?.email || username,
-        UserPoolId: userPoolId,
-      })
-    )
-
+    //Use admin user to authenticate and create user record
     const authResponse = await cognitoClient.send(
       new AdminInitiateAuthCommand({
         AuthFlow: 'ADMIN_USER_PASSWORD_AUTH',

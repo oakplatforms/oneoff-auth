@@ -22,7 +22,6 @@ provider:
         - Effect: Allow
           Action:
             - cognito-idp:AdminInitiateAuth
-            - cognito-idp:AdminAddUserToGroup
           Resource: 
             - arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/${env:ADMIN_USER_POOL_ID}
             - arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/${env:CONSUMER_USER_POOL_ID}
