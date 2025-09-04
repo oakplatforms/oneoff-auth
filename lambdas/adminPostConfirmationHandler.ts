@@ -39,7 +39,7 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
       url: '/user',
       method: 'POST',
       payload: {
-        authId: String(userSub),
+        authId: userSub,
         isAdmin: true,
         admin: {
           email: event?.request?.userAttributes?.email,
