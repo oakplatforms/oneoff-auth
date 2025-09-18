@@ -45,7 +45,21 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
           email: event?.request?.userAttributes?.email,
           type: 'REGISTERED',
           profile: {},
-          carts: [{}]
+          carts: [{}],
+          lists: [
+            {
+              name: 'favorites',
+              displayName: 'Favorites',
+              type: 'FAVORITE',
+              isPrivate: true
+            },
+            {
+              name: 'collection',
+              displayName: 'Collection',
+              type: 'COLLECTION',
+              isPrivate: false
+            }
+          ]
         }
       },
       token: sessionToken,
