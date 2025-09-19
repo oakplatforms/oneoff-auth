@@ -57,7 +57,7 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
               name: 'collection',
               displayName: 'Collection',
               type: 'COLLECTION',
-              isPrivate: false
+              isPrivate: true
             }
           ]
         }
