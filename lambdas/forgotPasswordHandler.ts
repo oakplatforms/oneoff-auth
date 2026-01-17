@@ -16,7 +16,7 @@ export const handler = async (event: PreTokenGenerationTriggerEvent): Promise<ty
     await eventBridge.send(new PutEventsCommand({
       Entries: [
         {
-          Source: 'tcgx',
+          Source: 'oneoff',
           DetailType: 'user.forgot-password',
           Detail: JSON.stringify({
             userId: userSub,
