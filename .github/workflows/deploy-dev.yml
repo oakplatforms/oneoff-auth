@@ -4,6 +4,11 @@ on:
   push:
     branches: [ dev ]
 
+# Required for OIDC token generation
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -24,11 +29,11 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Setup AWS credentials
+    # OIDC-based AWS authentication (no access keys needed)
+    - name: Configure AWS credentials via OIDC
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        role-to-assume: ${{ vars.AWS_ROLE_ARN_DEV }}
         aws-region: us-east-1
 
     - name: Install Serverless Framework
@@ -42,8 +47,8 @@ jobs:
     - name: Deploy to Dev
       run: serverless deploy --stage dev --verbose
       env:
-        CONSUMER_USER_POOL_ID: ${{ secrets.CONSUMER_USER_POOL_ID }}
-        CONSUMER_CLIENT_ID: ${{ secrets.CONSUMER_CLIENT_ID }}
-        CONSUMER_DEFAULT_USERNAME: ${{ secrets.CONSUMER_DEFAULT_USERNAME }}
-        CONSUMER_DEFAULT_PASSWORD: ${{ secrets.CONSUMER_DEFAULT_PASSWORD }}
-        API_BASE_URL: ${{ vars.API_BASE_URL }}
+        ADMIN_USER_POOL_ID: ${{ vars.ADMIN_USER_POOL_ID_DEV }}
+        ADMIN_CLIENT_ID: ${{ vars.ADMIN_CLIENT_ID_DEV }}
+        CONSUMER_USER_POOL_ID: ${{ vars.CONSUMER_USER_POOL_ID_DEV }}
+        CONSUMER_CLIENT_ID: ${{ vars.CONSUMER_CLIENT_ID_DEV }}
+        API_BASE_URL: ${{ vars.API_BASE_URL_DEV }}
