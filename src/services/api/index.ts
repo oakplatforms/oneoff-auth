@@ -50,7 +50,7 @@ export async function fetchData<T>({ url, method = 'GET', payload, token }: Fetc
     body: payload ? JSON.stringify(payload) : undefined,
   }
 
-  const fullUrl = `${baseUrl}/api/v1${apiPath}`
+  const fullUrl = `${baseUrl}${apiPath}`
   console.log('Making request to:', fullUrl)
 
   //Validate the final URL before making the request
