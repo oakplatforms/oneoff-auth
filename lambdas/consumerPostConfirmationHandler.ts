@@ -48,12 +48,6 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
           carts: [{}],
           lists: [
             {
-              name: 'favorites',
-              displayName: 'Favorites',
-              type: 'FAVORITE',
-              isPrivate: true
-            },
-            {
               name: 'collection',
               displayName: 'Collection',
               type: 'COLLECTION',
