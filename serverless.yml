@@ -47,7 +47,8 @@ functions:
       CONSUMER_USER_POOL_ID: ${env:CONSUMER_USER_POOL_ID}
       CONSUMER_CLIENT_ID: ${env:CONSUMER_CLIENT_ID}
       API_BASE_URL: ${env:API_BASE_URL}
-  
+      DEFAULT_USERNAME: ${env:DEFAULT_USERNAME}
+
   oneoff-change-password:
     name: oneoff-change-password-${sls:stage}
     handler: lambdas/changePasswordHandler.handler

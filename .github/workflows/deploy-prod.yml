@@ -52,3 +52,4 @@ jobs:
         CONSUMER_USER_POOL_ID: ${{ vars.CONSUMER_USER_POOL_ID_PROD }}
         CONSUMER_CLIENT_ID: ${{ vars.CONSUMER_CLIENT_ID_PROD }}
         API_BASE_URL: ${{ vars.API_BASE_URL_PROD }}
+        DEFAULT_USERNAME: ${{ vars.USERNAME }}

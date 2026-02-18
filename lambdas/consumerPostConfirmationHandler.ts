@@ -1,13 +1,13 @@
 import { CognitoIdentityProviderClient, AdminInitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
 import type { PostConfirmationTriggerEvent } from 'aws-lambda'
 import { fetchData } from '../src/services/api'
+import { getConsumerPassword } from '../src/utils/secretsManager'
 
 const cognitoClient = new CognitoIdentityProviderClient({ region: 'us-east-1' })
 
 const userPoolId = process.env.CONSUMER_USER_POOL_ID as string
 const clientId = process.env.CONSUMER_CLIENT_ID as string
-const username = process.env.CONSUMER_DEFAULT_USERNAME as string
-const password = process.env.CONSUMER_DEFAULT_PASSWORD as string
+const username = process.env.DEFAULT_USERNAME as string
 
 export const handler = async (event: PostConfirmationTriggerEvent): Promise<typeof event> => {
   try {
@@ -19,6 +19,9 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
     }
 
     const userSub = event?.request?.userAttributes?.sub
+
+    //Fetch password from Secrets Manager at runtime
+    const password = await getConsumerPassword()
 
     //Use admin user to authenticate and create user record
     const authResponse = await cognitoClient.send(
