@@ -38,6 +38,8 @@ functions:
     environment:
       ADMIN_USER_POOL_ID: ${env:ADMIN_USER_POOL_ID}
       ADMIN_CLIENT_ID: ${env:ADMIN_CLIENT_ID}
+      ADMIN_DEFAULT_USERNAME: ${env:ADMIN_DEFAULT_USERNAME}
+      ADMIN_DEFAULT_PASSWORD: ${env:ADMIN_DEFAULT_PASSWORD}
       API_BASE_URL: ${env:API_BASE_URL}
 
   oneoff-consumer-post-confirmation:
