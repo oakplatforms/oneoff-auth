@@ -1,13 +1,13 @@
 import { CognitoIdentityProviderClient, AdminInitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
 import type { PreTokenGenerationTriggerEvent } from 'aws-lambda'
 import { fetchData } from '../src/services/api'
+import { getAdminPassword } from '../src/utils/secretsManager'
 
 const cognitoClient = new CognitoIdentityProviderClient({ region: 'us-east-1' })
 
 const userPoolId = process.env.ADMIN_USER_POOL_ID as string
 const clientId = process.env.ADMIN_CLIENT_ID as string
-const username = process.env.ADMIN_DEFAULT_USERNAME as string
-const password = process.env.ADMIN_DEFAULT_PASSWORD as string
+const username = 'admin@oakplatforms.com'
 
 export const handler = async (event: PreTokenGenerationTriggerEvent): Promise<typeof event> => {
   try {
@@ -19,6 +19,8 @@ export const handler = async (event: PreTokenGenerationTriggerEvent): Promise<ty
     }
 
     const userSub = event?.request?.userAttributes?.sub
+
+    const password = await getAdminPassword()
 
     const authResponse = await cognitoClient.send(
       new AdminInitiateAuthCommand({
