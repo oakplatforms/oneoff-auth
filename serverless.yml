@@ -32,9 +32,9 @@ provider:
             - arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/${env:CONSUMER_USER_POOL_ID}
 
 functions:
-  oneoff-admin-post-confirmation:
-    name: oneoff-admin-post-confirmation-${sls:stage}
-    handler: lambdas/adminPostConfirmationHandler.handler
+  oneoff-admin-pre-token-generation:
+    name: oneoff-admin-pre-token-generation-${sls:stage}
+    handler: lambdas/adminPreTokenGenerationHandler.handler
     environment:
       ADMIN_USER_POOL_ID: ${env:ADMIN_USER_POOL_ID}
       ADMIN_CLIENT_ID: ${env:ADMIN_CLIENT_ID}

@@ -1,5 +1,5 @@
 import { CognitoIdentityProviderClient, AdminInitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider'
-import type { PostConfirmationTriggerEvent } from 'aws-lambda'
+import type { PreTokenGenerationTriggerEvent } from 'aws-lambda'
 import { fetchData } from '../src/services/api'
 
 const cognitoClient = new CognitoIdentityProviderClient({ region: 'us-east-1' })
@@ -9,12 +9,12 @@ const clientId = process.env.ADMIN_CLIENT_ID as string
 const username = process.env.ADMIN_DEFAULT_USERNAME as string
 const password = process.env.ADMIN_DEFAULT_PASSWORD as string
 
-export const handler = async (event: PostConfirmationTriggerEvent): Promise<typeof event> => {
+export const handler = async (event: PreTokenGenerationTriggerEvent): Promise<typeof event> => {
   try {
-    console.log('PostConfirmation Trigger Event:', JSON.stringify(event, null, 2))
+    console.log('PreTokenGeneration Trigger Event:', JSON.stringify(event, null, 2))
 
-    if (event.triggerSource !== 'PostConfirmation_ConfirmSignUp') {
-      console.log(`Skipping post confirmation logic for trigger source: ${event.triggerSource}`)
+    if (event.triggerSource !== 'TokenGeneration_NewPasswordChallenge') {
+      console.log(`Skipping user creation for trigger source: ${event.triggerSource}`)
       return event
     }
 
@@ -50,7 +50,7 @@ export const handler = async (event: PostConfirmationTriggerEvent): Promise<type
 
     return event
   } catch (error) {
-    console.error('PostConfirmation Error:', error)
+    console.error('PreTokenGeneration Error:', error)
     throw error
   }
 }
